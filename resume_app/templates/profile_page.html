@@ -1,0 +1,732 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main_content %}
+
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Profile</h1>
+  </div><!-- End Page Title -->
+
+  <section class="section profile">
+    <div class="row">
+      <div class="col-xl-4">
+
+        <div class="card">
+          <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+            <style>
+              .avatar-block {
+                position: relative;
+                transition: all ease-in-out 0.2s;
+              }
+
+              .avatar-block input[type="file"] {
+                display: none;
+              }
+
+              .avatar-block[uploaded="false"] .remove-btn,
+              .avatar-block[uploaded="false"] .upload-btn {
+                display: none;
+              }
+
+              .avatar-block[uploaded="true"] .add-btn {
+                display: none;
+              }
+
+              .avatar-block[uploaded="false"] .add-btn {
+                display: block;
+                background-color: #376bca;
+                border: solid 2px #fff;
+                opacity: 1;
+                bottom: -10px;
+                transform: scale(0.9)
+              }
+
+              .avatar-block[uploaded="false"] img {
+                border-radius: unset !important;
+              }
+
+              .avatar-block[uploaded="false"]:hover .add-btn {
+                transform: scale(1.2)
+              }
+
+              .avatar-block .add-btn,
+              .avatar-block .remove-btn,
+              .avatar-block .upload-btn {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: fit-content;
+                opacity: 0;
+                transition: all ease-in-out 0.2s;
+              }
+
+              .avatar-block:hover .profile-control {
+                opacity: 1;
+                margin: auto;
+              }
+
+              .avatar-block:hover .upload-btn {
+                /* right: 0 !important; */
+                transform: translateX(-50px);
+              }
+
+              .avatar-block:hover .remove-btn {
+                transform: translateX(50px);
+              }
+
+              .upload-btn * {
+                outline: none !important;
+              }
+            </style>
+
+
+          <form
+            onchange="this.submit()"
+            method="post"
+            action="{% url 'profile_image_upload' %}"
+            uploaded="{% if profile_data.Image != '/uploads/' %}true{% else %}false{% endif %}"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <img src="{% if profile_data.Image != '/uploads/' %}{{profile_data.Image}}{% else %}{% static 'assets/img/avatar.png' %}{% endif %}" alt="Profile" class="rounded-circle">
+            <a href="" class="rounded-circle" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+            <label for="upload-image" class="profile-control upload-btn btn btn-primary btn-sm rounded-circle" title="Upload new profile image"><i class="bi bi-pencil"></i></label>
+            <label for="upload-image" class="profile-control add-btn btn btn-primary btn-sm rounded-circle" title="Upload new profile image"><i class="bi bi-plus"></i></label>
+            <input name="profile_image" type="file" id="upload-image" />
+
+          </form>
+            <h2>{{profile_data.Username}}</h2>
+            <h3>{{profile_data.JobTitle}}</h3>
+            <div class="social-links mt-2">
+              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-8">
+
+        <div class="card">
+          <div class="card-body pt-3">
+            <!-- Bordered Tabs -->
+            <ul class="nav nav-tabs nav-tabs-bordered">
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#education">Education</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#experience">Experience</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#skills">Skills</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#projects">Projects</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#references">References</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+              </li>
+            </ul>
+            <div class="tab-content pt-2">
+
+              <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                <!-- Profile Edit Form -->
+                <form method="POST" action ="{% url 'profile_update' %}">
+                  {% csrf_token %}
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating mb-3">
+                        <input name="fullName" type="text" class="form-control" id="fullName" placeholder="fullName" value="{{profile_data.FullName}}">
+                        <label for="fullName" >Full Name</label>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col">
+                          <div class="form-floating">
+                            <input name="birth_date" type="date" class="form-control" id="birth_date" placeholder="birth_date" value="{{profile_data.BirthDate}}">
+                            <label for="birth_date" >Birth Date</label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-floating">
+                        <input name="mobile" type="text" class="form-control" id="mobile" placeholder="mobile" value="{{profile_data.mobile}}">
+                        <label for="mobile" >Mobile</label>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <textarea name="about" class="form-control" id="about" style="height: 205px" placeholder="about">{{profile_data.about}}</textarea>
+                        <label for="about">About</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating mb-3">
+                        <input name="country" type="text" class="form-control" id="country" value="{{profile_data.country}}" placeholder="country">
+                        <select class="form-select" name="country" id="floatingSelect" aria-label="country">
+                          <option selected="">India</option>
+                          <option value="1">Bhutan</option>
+                          <option value="2">London</option>
+                          <option value="3">Canada</option>
+                          <option value="4">other</option>
+                        </select>
+                        <label for="country" >Country</label>
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input name="state" type="text" class="form-control" id="state" value="{{profile_data.state}}" placeholder="state">
+                        <select class="form-select" name="state" id="floatingSelect" aria-label="state">
+                          <option selected="">Gujarat</option>
+                          <option value="1">Goa</option>
+                          <option value="2">Haryana</option>
+                          <option value="3">Rajasthan</option>
+                          <option value="4">Maharashtra</option>
+                          <option value="5">Punjab</option>
+                        </select>
+                        <label for="state" >State</label>
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input name="city" type="text" class="form-control" id="city" value="{{profile_data.city}}" placeholder="city">
+                        <select class="form-select" name="city" id="floatingSelect" aria-label="city">
+                          <option selected="">Surat</option>
+                          <option value="1">Ahmedabad</option>
+                          <option value="2">Mumbai</option>
+                          <option value="3">Pune</option>
+                          <option value="4">Vadodara</option>
+                          <option value="5">Kolkata</option>
+                        </select>
+                        <label for="city" >City</label>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <textarea name="address" class="form-control" id="address" style="height: 100px" placeholder="address">{{profile_data.address}}</textarea>
+                        <label for="address" >Address</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary"><a href="{% url 'profile_page' %}"></a>Save Changes</button>
+                  </div>
+                </form><!-- End Profile Edit Form -->
+              </div>
+
+              <div class="tab-pane fade pt-3 show active" id="education">
+                <!-- add new edcation details -->
+                <div class="row">
+                  <div class="col-7">
+                    <form method="post" action="{% url 'add_education' %}">
+                      {% csrf_token %}
+                      
+                          <div class="form-floating mb-3">
+                            <select class="form-select" name="board_university" id="floatingSelect" aria-label="board_university">
+                              <option selected="">Select</option>
+                              <!--option>Gujarat University</option-->
+                              {% for bu in board_universities %}
+                                {% if bu.id == edit_education.BoardUniversity.id %}
+                                  <option value="{{bu.id}}" selected>{{bu.Name}}</option>
+                                {% else %}
+                                  <option value="{{bu.id}}">{{bu.Name}}</option>
+                                {% endif %}
+                              {% endfor %}
+                            </select>
+                            <label for="board_university" class="col-form-label">Board/University</label>
+                          </div>
+                          <div class="form-floating mb-3">
+                            <select class="form-select" name="course_stream" id="floatingSelect" aria-label="course_stream">
+                              <option selected="">Select</option>
+                              {% for cs in course_stream %}
+                                {% if cs.id == edit_education.CourseStream.id %}
+                                  <option value="{{cs.id}}" selected>{{cs.Name}}</option>
+                                {% else %}
+                                  <option value="{{cs.id}}">{{cs.Name}}</option>
+                                {% endif %}
+                              {% endfor %}
+                            </select>
+                            <label for="course_stream" class="col-form-label">Course/Stream</label>
+                          </div>
+  
+                          <div class="row mb-2">
+                            <div class="col-4">
+                              <div class="form-floating">
+                                <input name="start_date" type="date" class="form-control" id="start_date" placeholder="score" value="{{edit_education.StartDate">
+                                <label for="start_date" class="col-form-label">Start Date</label>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating">
+                                  <input name="end_date" type="date" class="form-control" id="end_date" placeholder="score" value="{{edit_education.EndDate}}">
+                                  <label for="end_date" class="col-form-label">End Date</label>
+                                </div>
+                                <div class="is_continue_switch mt-2">
+                                  <div class="form-check form-switch" style="float: right;" data-bs-toggle="tooltip" data-bs-placement="top" title="is continue">
+                                    <input class="form-check-input" name="Is_education_continue" type="checkbox" id="is_education_continue" {% if edit_education.IsCompleted %}checked{% endif %}>
+                                    <label class="form-check-label" for="Is_education_continue">Persue?</label>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                              <div class="form-floating">
+                                <input name="score" type="number" class="form-control" id="score" placeholder="score" max="100.00" value="{{edit_education.Score}}">
+                                <label for="score" class="col-form-label">Score {% if edit_education.IsPercent %}(%){% else %}(CGPA){% endif %}</label>
+                              </div>
+                              <div class="is_percent_switch mt-2">
+                                <div class="form-check form-switch" style="margin: auto;" data-bs-toggle="tooltip" data-bs-placement="top" title="perecent">
+                                  <input class="form-check-input" name="is_cgpa" type="checkbox" id="is_cgpa" {% if edit_education.IsPercent %}checked{% endif %}>
+                                  <label class="form-check-label" for="is_cgpa">Is CGPA?</label>
+                                </div>
+                              </div> 
+                              <!--div class="form-floating">
+                                <input name="score" type="text" class="form-control" id="score" placeholder="" value="{{edit_education.Score}}">
+                                <label for="score" class="col-form-label">Score</label>
+                              </div-->
+                            </div>
+                          </div>
+  
+                          <div class="row">
+                            <div class="col">
+                              <div class="form-floating">
+                                <textarea name="description" class="form-control" id="description" placeholder="description"></textarea>
+                                <label for="description" class="col-form-label">Description{{edit_education.Description}}</label>
+                              </div>
+                            </div>
+                          </div>
+  
+                      <div class="text-center row mt-2">
+                        <button type="submit" class="w-auto m-auto btn btn-primary"><a href="{% url 'profile_page' %}"></a>Save Changes</button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-5 edcation_list border" style="position:relative;border-radius: 4px;">
+                    <h4 class="w-100" style="position: absolute; top:0; left: 0;z-index: 1; background-color: #fff; padding: 5px; border-bottom: #ddd solid 1px;">Education List</h4>
+                    <div class=" scroller mt-5">
+                      {% for education in my_educations %}
+                      <div class="card">
+                        <div class="card-body p-2">
+                          <h5 class="card-title p-0">{{education.CourseStream.Name}}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">{{education.BoardUniversity.Name}}</h6>
+                          <p class="card-text">{{education.Description}}</p>
+                          <a href="{% url 'edit_education' pk=education.pk %}" class="card-link m-0 btn btn-sm btn-primary">edit</a>
+                          <a href="{% url 'delete_education' pk=education.pk %}" class="card-link m-0 btn btn-sm btn-danger">delete</a>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <!--End add new edcation details -->
+              </div>
+
+              <div class="tab-pane fade profile-edit pt-3" id="experience">
+                <!-- add new experience details -->
+                <div class="row">
+                  <div class="col-7">
+                    <form method="post" action="{% url 'add_experience' %}">
+                      {% csrf_token %}
+                      <div class="form-floating mb-3">
+                        <input name="job_title" class="form-control" id="job_title" placeholder="job_title" value="{{edit_experience.JobTitle}}">
+                        <label for="job_title" class="col-form-label">Job Title{{edit_experience.JobTitle}}</label>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="company_name" class="form-control" id="company_name" placeholder="company_name" value="{{edit_experience.Company}}">
+                        <label for="company_name" class="col-form-label">Company Name{{edit_experience.Company}}</label>
+                      </div>
+    
+                      <div class="row mb-3">
+                        <div class="col-4">
+                          <div class="form-floating">
+                            <input name="start_date" type="date" class="form-control" id="start_date"
+                              placeholder="start Date" value="{{edit_experience.StartDate}}">
+                            <label for="start_date" >Start Date</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <div class="form-floating">
+                            <input name="end_date" type="date" class="form-control" id="end_date" placeholder="End Date" value="{{edit_experience.EndDate}}">
+                            <label for="end_date" >End Date</label>
+                          </div>
+                        </div>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="description" class="form-control" id="description" placeholder="description" value="{{edit_experience.Description}}">
+                        <label for="description" class="col-form-label">Description{{edit_experience.Description}}</label>
+                      </div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                      </div>
+                    </form><!-- End Profile Edit Form -->
+                  </div>
+                  <div class="col-5 edcation_list border" style="position:relative;border-radius: 4px;">
+                    <h6 class="w-100" style="position: absolute; top:0; left: 0;z-index: 1; background-color: #fff; padding: 5px; border-bottom: #ddd solid 1px;">Experience List</h6>
+                    <div class=" scroller mt-5">
+                      {% for experience in my_experience %}
+                      <div class="card">
+                        <div class="card-body p-2">
+                          <h7 class="card-title p-0">{{experience.JobTitle}}</h7>
+                          <h8 class="card-subtitle mb-2 text-muted">{{experience.Company}}</h8>
+                          <p class="card-text">{{experience.Description}}</p>
+                          <a href="{% url 'delete_experience' pk=experience.pk %}" class="card-link m-0 btn btn-sm btn-danger">delete</a>
+                        </div>
+                      </div>
+                     {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!--End add new edcation details -->
+              </div>
+
+              
+              <!--div class="tab-pane fade profile-edit pt-3" id="experience">
+                
+                <form>
+                  {% csrf_token %}
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="Job_title" class="form-control" id="Job_title" placeholder="Job_title">
+                        <label for="Job_title">Job Title</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="Company_name" class="form-control" id="Company_name" placeholder="Company_name">
+                        <label for="Company_name">Company Name</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-4">
+                      <div class="form-floating">
+                        <input name="Start_date" type="date" class="form-control" id="Start_date"
+                          placeholder="Start Date">
+                        <label for="Start_date" class="col-form-label">Start Date</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-4">
+                      <div class="form-floating">
+                        <input name="End_date" type="date" class="form-control" id="End_date" placeholder="End Date">
+                        <label for="End_date" class="col-form-label">End Date</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="Description" class="form-control" id="Description" placeholder="description">
+                        <label for="Description" class="col-form-label">Description</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form--><!-- End Profile Edit Form -->
+              <!--/div -->
+
+
+              <div class="tab-pane fade pt-3" id="skills">
+                <!-- add new skill details -->
+                <div class="row">
+                  <div class="col-7">
+                    <form method="post" action="{% url 'add_skill' %}">
+                      {% csrf_token %}
+                      <div class="form-floating mb-3">
+                        <input name="skill" class="form-control" id="skill" placeholder="job_title" value="{{edit_skill.Skill}}">
+                        <label for="skill">Skills{{edit_skill.Skill}}</label>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="level" class="form-control" id="level" placeholder="level" value="{{edit_skill.Level}}">
+                        <label for="level">Level{{edit_skill.Level}}</label>
+                      </div>
+    
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                      </div>
+    
+                    </form>
+                  </div>
+
+                  <div class="col-5 edcation_list border" style="position:relative;border-radius: 4px;">
+                    <h9 class="w-100" style="position: absolute; top:0; left: 0;z-index: 1; background-color: #fff; padding: 5px; border-bottom: #ddd solid 1px;">Skill List</h9>
+                    <div class=" scroller mt-5">
+                      {% for skill in my_skill %}
+                      <div class="card">
+                        <div class="card-body p-2">
+                          <h10 class="card-title p-0">{{skill.Skill}}</h10>
+                          <h11 class="card-subtitle mb-2 text-muted">{{skill.Level}}</h11>
+                          <a href="{% url 'delete_skill' pk=skill.pk %}" class="card-link m-0 btn btn-sm btn-danger">delete</a>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!--End add new edcation details -->
+              </div>
+
+              <div class="tab-pane fade pt-3" id="projects">
+                <!-- add projects details -->
+                <div class="row">
+                  <div class="col-7">
+                    <form method="post" action="{% url 'add_project' %}">
+                      {% csrf_token %}
+                      <div class="form-floating mb-3">
+                        <input name="title" type="text" class="form-control" id="title" placeholder="title">
+                        <label for="title">Title</label>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="category" type="text" class="form-control" id="category" placeholder="category" value="{{user.category">
+                        <label for="category">Category</label>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="description" type="text" class="form-control" id="description" placeholder="description" value="{{user.description}}">
+                        <label for="description">Description</label>
+                      </div>
+    
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-5 edcation_list border" style="position:relative;border-radius: 4px;">
+                    <h5 class="w-100" style="position: absolute; top:0; left: 0;z-index: 1; background-color: #fff; padding: 5px; border-bottom: #ddd solid 1px;">Projects List</h5>
+                    <div class=" scroller mt-5">
+                    {% for project in my_project %}
+                    <div class="card">
+                      <div class="card-body p-2">
+                        <h5 class="card-title p-0">{{project.Title}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{project.Category}}</h6>
+                        <p class="card-text">{{project.Description}}</p>
+                        <a href="{% url 'delete_project' pk=project.pk %}" class="card-link m-0 btn btn-sm btn-danger">delete</a>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!--End projects details -->
+              </div>
+
+              <div class="tab-pane fade profile-edit pt-3" id="reference">
+                <!-- add new reference details -->
+                <div class="row">
+                  <div class="col-7">
+                    <form method="post" action="{% url 'add_reference' %}">
+                      {% csrf_token %}
+                      <div class="form-floating mb-3">
+                        <input name="link" type="text" class="form-control" id="link" placeholder="link">
+                        <label for="link" class="col-form-label">Link</label>
+                      </div>
+    
+                      <div class="form-floating mb-3">
+                        <input name="description" type="text" class="form-control" id="description" placeholder="description">
+                        <label for="description" class="col-form-label">Description</label>
+                      </div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                      </div>
+                    </form><!-- End Profile Edit Form -->
+                  </div>
+
+                  <div class="col-5 edcation_list border" style="position:relative;border-radius: 4px;">
+                    <h5 class="w-100" style="position: absolute; top:0; left: 0;z-index: 1; background-color: #fff; padding: 5px; border-bottom: #ddd solid 1px;">Experience List</h5>
+                    <div class=" scroller mt-5">
+                    {% for reference in my_reference %}
+                    <div class="card">
+                      <div class="card-body p-2">
+                        <h5 class="card-title p-0">{{reference.Link}}</h5>
+                        <p class="card-text">{{reference.Description}}</p>
+                        <a href="{% url 'delete_education' pk=education.pk %}" class="card-link m-0 btn btn-sm btn-danger">delete</a>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!--End add new edcation details -->
+              </div>
+
+
+              <!--div class="tab-pane fade pt-3" id="projects">
+
+                <form>
+                  {% csrf_token %}
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="title" class="form-control" id="title" placeholder="Title">
+                        <label for="title" class="col-form-label">Title</label>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="category" class="form-control" id="category" placeholder="Category">
+                        <label for="category" class="col-form-label">Category</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="description" class="form-control" id="description" placeholder="description">
+                        <label for="description" class="col-form-label">Description</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form>
+              </div-->
+
+              <!--div class="tab-pane fade pt-3" id="skills"-->
+                <!-- Profile Skill Form -->
+                <!--form>
+                  {% csrf_token %}
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="skill" class="form-control" id="skill" placeholder="Skill"></textarea>
+                        <label for="skill">Skill</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="level" class="form-control" id="level" placeholder="Level">
+                        <label for="level">Level</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+
+                </form-->
+              <!--/div-->
+
+
+              <div class="tab-pane fade pt-3" id="profile-settings">
+                <!-- Settings Form -->
+                <form>
+                  <div class="row mb-3">
+                    <label for="FullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                    <div class="col-md-8 col-lg-9">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="changesMade" checked>
+                        <label class="form-check-label" for="changesMade">
+                          Changes made to your account
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="newProducts" checked>
+                        <label class="form-check-label" for="newProducts">
+                          Information on new products and services
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="proOffers">
+                        <label class="form-check-label" for="proOffers">
+                          Marketing and promo offers
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
+                        <label class="form-check-label" for="securityNotify">
+                          Security alerts
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form><!-- End settings Form -->
+
+
+                <!-- Change Password Form -->
+                <form class="change_password_form" method="post" action="">
+                  {% csrf_token %}
+
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="current_password" type="password" class="form-control" id="currentPassword"
+                          placeholder="current password">
+                        <label for="currentPassword" class="col-form-label">Current Password</label>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input name="new_password" type="password" class="form-control" id="newPassword"
+                          placeholder="new password">
+                        <label for="newPassword" class="col-form-label">New Password</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                  </div>
+                </form><!-- End Change Password Form -->
+
+              </div><!-- End Bordered Tabs -->
+
+            </div>
+          </div>
+  </section>
+
+</main><!-- End #main -->
+
+{% endblock %}
